@@ -10,7 +10,7 @@ const App = () => {
 
   const [size, setSize] = useState(3);
   const [steps, setSteps] = useState(300);
-  const [n, setN] = useState(300);
+  const [n, setN] = useState(Math.floor(window.innerWidth * 0.8 / size));
 
   useEffect(() => {
     const data = Array(n).fill(0);
