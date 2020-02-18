@@ -1,6 +1,6 @@
 {
   "name": "cellular-automata",
-  "home": "https://SoyOscarRH.github.io/CellularAutomata",
+  "homepage": "https://SoyOscarRH.github.io/CellularAutomata",
   "version": "0.1.0",
   "private": true,
   "dependencies": {
