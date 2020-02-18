@@ -1,35 +1,97 @@
-import React, { useEffect, useRef } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import styles from "./App.module.css";
 
-const data = [0, 1, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0];
+import { getLine } from "./automata";
 
 const App = () => {
   const canvas = useRef<HTMLCanvasElement>(null);
+  const [count, setCount] = useState(0);
+  const [rule, setRule] = useState(126);
+
+  const [size, setSize] = useState(3);
+  const [steps, setSteps] = useState(300);
+  const [n, setN] = useState(300);
 
   useEffect(() => {
-    const drawer = canvas.current?.getContext("2d");
+    const data = Array(n).fill(0);
+    data[n / 2] = 1;
+
+    const current_canvas = canvas.current;
+    const drawer = current_canvas?.getContext("2d");
     if (!drawer) return;
 
+    drawer.clearRect(0, 0, current_canvas!.width, current_canvas!.height);
     drawer.fillStyle = "white";
-    let currentLine = 0;
-    const size = 20;
 
-    for (let i = 0, current = 0; i < data.length; ++i) {
-      console.log(data[i], current, currentLine, current + size, currentLine + size)
-      if (data[i]) drawer.fillRect(current, currentLine, current + size, currentLine + size);
-      current += size
+    for (let step = 0, line = data; step < steps; ++step) {
+      line.forEach((cell, index) => {
+        if (!cell) return;
+        drawer.fillRect(index * size, step * size, size, size);
+      });
+
+      line = getLine(line, rule);
     }
-
-  }, []);
+  }, [count]);
 
   return (
     <div className={styles.app}>
       <main className={styles.appMain}>
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
+        <h2>Cellular Automata</h2>
 
-        <canvas ref={canvas} width="400" height="400" />
+        <label htmlFor="rule">Rule: </label>
+        <input
+          id="rule"
+          type="number"
+          min="0"
+          max="255"
+          value={rule}
+          onChange={e => setRule(Number(e.target.value))}
+        />
+
+        <label htmlFor="size">Size of cell: </label>
+        <input
+          id="size"
+          type="number"
+          min="1"
+          max="10"
+          value={size}
+          onChange={e => setSize(Number(e.target.value))}
+        />
+
+        <label htmlFor="n">Number of cells: </label>
+        <input
+          id="n"
+          type="number"
+          min="10"
+          step="10"
+          max="600"
+          value={n}
+          onChange={e => setN(Number(e.target.value))}
+        />
+
+        <label htmlFor="steps">Iterations: </label>
+        <input
+          id="steps"
+          type="number"
+          min="10"
+          step="10"
+          max="600"
+          value={steps}
+          onChange={e => setSteps(Number(e.target.value))}
+        />
+
+        <button onClick={() => setCount(c => c + 1)}>Go!</button>
+
+        <canvas
+          ref={canvas}
+          width={size * n}
+          height={size * steps}
+          style={{
+            border: "0.1rem solid rgba(255, 255, 255, .5)",
+            margin: "2rem",
+            padding: 0
+          }}
+        />
       </main>
     </div>
   );
