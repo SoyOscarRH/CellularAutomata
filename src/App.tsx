@@ -2,6 +2,7 @@ import React, { useEffect, useRef, useState } from "react";
 import styles from "./App.module.css";
 
 import { getLine } from "./automata";
+import { getBase, bindIt } from "./utils";
 
 const App = () => {
   const canvas = useRef<HTMLCanvasElement>(null);
@@ -9,18 +10,20 @@ const App = () => {
   const [rule, setRule] = useState(126);
 
   const [size, setSize] = useState(3);
-  const [steps, setSteps] = useState(300);
-  const [n, setN] = useState(Math.floor(window.innerWidth * 0.8 / size));
+
+  const [x, y] = [window.innerWidth, window.innerHeight];
+  const [steps, setSteps] = useState(getBase(size) * (x < y ? 2 : 1));
+  const [n, setN] = useState(getBase(size));
 
   useEffect(() => {
     const data = Array(n).fill(0);
-    data[n / 2] = 1;
+    data[Math.floor(n / 2)] = 1;
 
     const current_canvas = canvas.current;
     const drawer = current_canvas?.getContext("2d");
-    if (!drawer) return;
+    if (!current_canvas || !drawer) return;
 
-    drawer.clearRect(0, 0, current_canvas!.width, current_canvas!.height);
+    drawer.clearRect(0, 0, current_canvas!.width, current_canvas.height);
     drawer.fillStyle = "white";
 
     for (let step = 0, line = data; step < steps; ++step) {
@@ -31,6 +34,7 @@ const App = () => {
 
       line = getLine(line, rule);
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [count]);
 
   return (
@@ -45,7 +49,7 @@ const App = () => {
           min="0"
           max="255"
           value={rule}
-          onChange={e => setRule(Number(e.target.value))}
+          onChange={bindIt(setRule)}
         />
 
         <label htmlFor="size">Size of cell: </label>
@@ -55,7 +59,7 @@ const App = () => {
           min="1"
           max="10"
           value={size}
-          onChange={e => setSize(Number(e.target.value))}
+          onChange={bindIt(setSize)}
         />
 
         <label htmlFor="n">Number of cells: </label>
@@ -66,7 +70,7 @@ const App = () => {
           step="10"
           max="600"
           value={n}
-          onChange={e => setN(Number(e.target.value))}
+          onChange={bindIt(setN)}
         />
 
         <label htmlFor="steps">Iterations: </label>
@@ -77,21 +81,12 @@ const App = () => {
           step="10"
           max="600"
           value={steps}
-          onChange={e => setSteps(Number(e.target.value))}
+          onChange={bindIt(setSteps)}
         />
 
         <button onClick={() => setCount(c => c + 1)}>Go!</button>
 
-        <canvas
-          ref={canvas}
-          width={size * n}
-          height={size * steps}
-          style={{
-            border: "0.1rem solid rgba(255, 255, 255, .5)",
-            margin: "2rem",
-            padding: 0
-          }}
-        />
+        <canvas ref={canvas} width={size * n} height={size * steps} />
       </main>
     </div>
   );

@@ -1,32 +1,42 @@
-body, html {
+@import url("https://fonts.googleapis.com/css?family=Source+Code+Pro&display=swap");
+
+body,
+html {
   margin: 0;
   background-color: #282c34;
   font-family: -apple-system, BlinkMacSystemFont, sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  font-family: "Source Code Pro", monospace;
+}
+
+input,
+button {
+  width: min(60vw, 20rem);
+  font-size: 1.2rem;
+  border: 0 solid;
+  color: white;
+  text-align: center;
+  font-family: "Source Code Pro", monospace;
 }
 
 input {
-  width: 20vw;
-  font-size: 1.3rem;
+  padding: 0.5rem 0.1rem;
   margin-bottom: 1rem;
   margin-top: 0.2rem;
-  padding: 0.2rem;
   border-radius: 0.4rem;
-  background-color: rgba(255, 255, 255, .1);
-  border: 0 solid;
-  color: white;
-  text-align: center;
+  background-color: rgba(255, 255, 255, 0.1);
 }
 
 button {
-  padding: 0.5rem;
-  width: 20vw;
-  font-size: 1.3rem;
+  padding: 1rem;
   font-weight: bold;
   border-radius: 0.4rem;
-  background-color: rgba(255, 255, 255, .6);
-  border: 0 solid;
-  color: white;
-  text-align: center;
+  background-color: rgba(255, 255, 255, 0.6);
+}
+
+canvas {
+  border: 0.1rem solid rgba(255, 255, 255, 0.5);
+  margin: 2rem;
+  padding: 0;
 }
