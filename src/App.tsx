@@ -16,7 +16,11 @@ const App = () => {
   const [n, setN] = useState(getBase(size));
 
   useEffect(() => {
-    const data = Array(n).fill(0);
+    //const data = Array(n).fill(0);
+    const buffer = new ArrayBuffer(n);
+    const data = new Uint8Array(buffer);
+
+    for (let i = 0; i < data.length; ++i) data[i] = 0;
     data[Math.floor(n / 2)] = 1;
 
     const current_canvas = canvas.current;
