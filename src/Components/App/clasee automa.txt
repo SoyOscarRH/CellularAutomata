@@ -1,0 +1,3 @@
+clasee automata
+graficas
+costume input
