@@ -5,4 +5,9 @@ import "./index.css";
 import App from "./Components/App";
 
 const DOM_NODE = document.getElementById("root");
-ReactDOM.render(<App />, DOM_NODE);
+ReactDOM.render(
+  <React.StrictMode>
+    <App />
+  </React.StrictMode>,
+  DOM_NODE
+);

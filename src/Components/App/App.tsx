@@ -12,35 +12,42 @@ const App = () => {
   const cellsInit = numOfCellsWeCanHave(cellSize);
   const [numCells, bindNCells] = useInput(cellsInit);
 
-  const [init, _] = useState(createBits(numCells));
+  const [init, changeInit] = useState([] as Array<number>);
 
   const isVertical = window.innerWidth < window.innerHeight;
   const stepsInit = isVertical ? 2 * cellsInit : cellsInit;
   const [steps, bindSteps] = useInput(stepsInit);
   const [intenseMode, toggleMode] = useToggle(!isVertical);
 
+  const backgroundColor = `rgba(255, 255, 255, ${intenseMode ? 0.7 : 0.1})`;
+  const doIt = () => doWork(canvas, cellSize, steps, ruleID, init, intenseMode);
+  const props = { className: styles.intenseButton, style: { backgroundColor } };
+
   const canvas = useRef<HTMLCanvasElement>(null);
   const [width, height] = [cellSize * numCells, cellSize * steps];
   const propsCanvas = { width, height, className: styles.display };
 
   useEffect(() => {
-    if (intenseMode) doWork(canvas, cellSize, steps, ruleID, init);
-  }, [intenseMode, canvas, cellSize, steps, ruleID, init]);
+    if (intenseMode) changeInit(createBits(numCells));
+  }, [numCells, intenseMode]);
 
-  const backgroundColor = `rgba(255, 255, 255, ${intenseMode ? 0.7 : 0.1})`;
-  const doIt = () => doWork(canvas, cellSize, steps, ruleID, init);
-  const props = { className: styles.intenseButton, style: { backgroundColor } };
+  useEffect(() => {
+    if (intenseMode) doWork(canvas, cellSize, steps, ruleID, init, intenseMode);
+  }, [intenseMode, canvas, cellSize, steps, ruleID, init]);
 
   const getInit = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
-    let reader = new FileReader();
+    const reader = new FileReader();
+    reader.readAsText(file);
+
     reader.onload = e => {
       const text = e.target?.result as string;
-      let data = text.split(",").map(i => Number(i));
-      console.log(data);
+      let data = text.split(",").map(i => Number(i)) as Array<number>;
+      // @ts-ignore
+      bindNCells.onChange({ target: { value: data.length } });
+      changeInit(data);
     };
-    reader.readAsText(file);
   };
 
   return (
@@ -76,6 +83,7 @@ const App = () => {
         )}
 
         <canvas ref={canvas} {...propsCanvas} />
+        <div id="graph" style={{visibility: intenseMode? "hidden" : "initial"}} />
       </main>
     </div>
   );

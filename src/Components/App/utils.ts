@@ -1,6 +1,6 @@
 import CellularAutomata from "../../General/CellularAutomata";
 
-const numOfCellsWeCanHave = (size: number, percentageOfWidth: number = 0.7) => {
+const numOfCellsWeCanHave = (size: number, percentageOfWidth: number = 0.6) => {
   const numCells = Math.floor((window.innerWidth * percentageOfWidth) / size);
   const nearest10NumCells = ((numCells - (numCells % 10)) / 10) * 10;
 
@@ -15,12 +15,32 @@ const createBits = (numCells: number): Array<number> => {
   return data;
 };
 
+const drawGraph = (histogram: Array<number>) => {
+  const trace = {
+    y: histogram,
+    type: "bar",
+    opacity: 0.9,
+    marker: { color: "rgb(158,202,225)" }
+  };
+
+  const data = [trace];
+
+  var layout = {
+    title: "Number of ones",
+    showlegend: false
+  };
+
+  // @ts-ignore
+  Plotly.newPlot("graph", data, layout);
+};
+
 const doWork = (
   canvas: React.RefObject<HTMLCanvasElement>,
   cellSize: number,
   iterations: number,
   ruleID: number,
-  init: Array<number>
+  init: Array<number>,
+  intenseMode: boolean
 ): void => {
   const current_canvas = canvas.current;
   const drawer = current_canvas?.getContext("2d");
@@ -39,6 +59,8 @@ const doWork = (
 
     automata.newEpoch(ruleID);
   }
+
+  if (!intenseMode) drawGraph(automata.histogram);
 };
 
 export { numOfCellsWeCanHave, doWork, createBits };
