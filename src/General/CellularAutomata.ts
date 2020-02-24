@@ -3,7 +3,6 @@ type bits = Uint8Array;
 class CellularAutomata {
   readonly histogram: Array<number>;
   epoch: number;
-
   data: bits;
   buffer: bits;
 
@@ -49,6 +48,23 @@ class CellularAutomata {
     const id = (data[n1] << 2) + (data[index] << 1) + (data[n2] << 0);
     return (rulesID >> id) & 1;
   };
+
+  get average(): number {
+    let total = 0;
+    for (let i = 0; i < this.histogram.length; ++i) total += this.histogram[i];
+
+    return total / this.histogram.length;
+  }
+
+  get variance(): number {
+    const average = this.average;
+    let variance = 0;
+
+    for (let i = 0; i < this.histogram.length; ++i)
+      variance += (this.histogram[i] - average) * (this.histogram[i] - average);
+
+    return variance / this.histogram.length;
+  }
 }
 
 export default CellularAutomata;

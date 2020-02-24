@@ -41,10 +41,11 @@ const doWork = (
   ruleID: number,
   init: Array<number>,
   intenseMode: boolean
-): void => {
+): CellularAutomata | undefined => {
+  console.log("hey");
   const current_canvas = canvas.current;
   const drawer = current_canvas?.getContext("2d");
-  if (!current_canvas || !drawer) return;
+  if (!current_canvas || !drawer) return undefined;
 
   const automata = new CellularAutomata(init);
 
@@ -61,6 +62,8 @@ const doWork = (
   }
 
   if (!intenseMode) drawGraph(automata.histogram);
+
+  return automata;
 };
 
 export { numOfCellsWeCanHave, doWork, createBits };

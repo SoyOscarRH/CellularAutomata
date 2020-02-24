@@ -4,6 +4,7 @@ import styles from "./App.module.css";
 import { useInput } from "../../Hooks/useInput";
 import { useToggle } from "../../Hooks/useToggle";
 import { numOfCellsWeCanHave, createBits, doWork } from "./utils";
+import CellularAutomata from "../../General/CellularAutomata";
 
 const App = () => {
   const [ruleID, bindRule] = useInput(126);
@@ -17,23 +18,34 @@ const App = () => {
   const isVertical = window.innerWidth < window.innerHeight;
   const stepsInit = isVertical ? 2 * cellsInit : cellsInit;
   const [steps, bindSteps] = useInput(stepsInit);
-  const [intenseMode, toggleMode] = useToggle(!isVertical);
+  const [simpleMode, toggleMode] = useToggle(true);
 
-  const backgroundColor = `rgba(255, 255, 255, ${intenseMode ? 0.7 : 0.1})`;
-  const doIt = () => doWork(canvas, cellSize, steps, ruleID, init, intenseMode);
+  const backgroundColor = `rgba(255, 255, 255, ${simpleMode ? 0.7 : 0.1})`;
+  const doIt = () => doWork(canvas, cellSize, steps, ruleID, init, simpleMode);
   const props = { className: styles.intenseButton, style: { backgroundColor } };
 
   const canvas = useRef<HTMLCanvasElement>(null);
   const [width, height] = [cellSize * numCells, cellSize * steps];
   const propsCanvas = { width, height, className: styles.display };
 
-  useEffect(() => {
-    if (intenseMode) changeInit(createBits(numCells));
-  }, [numCells, intenseMode]);
+  const automata = useRef<CellularAutomata>();
 
   useEffect(() => {
-    if (intenseMode) doWork(canvas, cellSize, steps, ruleID, init, intenseMode);
-  }, [intenseMode, canvas, cellSize, steps, ruleID, init]);
+    if (simpleMode) changeInit(createBits(numCells));
+  }, [numCells, simpleMode]);
+
+  useEffect(() => {
+    if (simpleMode) {
+      automata.current = doWork(
+        canvas,
+        cellSize,
+        steps,
+        ruleID,
+        init,
+        simpleMode
+      );
+    }
+  }, [simpleMode, canvas, cellSize, steps, ruleID, init]);
 
   const getInit = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -50,40 +62,68 @@ const App = () => {
     };
   };
 
+  useEffect(() => {
+    if (simpleMode) return;
+
+    const script = document.createElement("script");
+    script.async = true;
+    script.src = "https://cdn.plot.ly/plotly-latest.min.js";
+    document.body.appendChild(script);
+  }, [simpleMode]);
+
   return (
     <div className={styles.app}>
       <main className={styles.appMain}>
         <h2>Cellular Automata</h2>
 
-        <section className={styles.container}>
-          <button onClick={toggleMode} {...props}>
-            Simple Mode {intenseMode ? "on" : "off"}{" "}
-          </button>
+        <section className={styles.segment}>
+          <div className={styles.container}>
+            <button onClick={toggleMode} {...props}>
+              Simple Mode {simpleMode ? "on" : "off"}{" "}
+            </button>
+          </div>
+
+          <div className={styles.container}>
+            <label htmlFor="ruleID">Rule: </label>
+            <input id="ruleID" min="0" max="255" {...bindRule} />
+
+            <label htmlFor="cellSize">Size of cell: </label>
+            <input id="cellSize" min="1" max="15" {...bindSize} />
+
+            <label htmlFor="nCells">Number of cells: </label>
+            <input id="nCells" min="10" step="10" max="900" {...bindNCells} />
+
+            <label htmlFor="steps">Iterations: </label>
+            <input id="steps" min="10" step="10" {...bindSteps} />
+          </div>
+
+          {!simpleMode && (
+            <div className={styles.container}>
+              <input type="file" id="file" onChange={getInit} />
+              <button onClick={doIt}>Simulate automata</button>
+            </div>
+          )}
+
+          <canvas ref={canvas} {...propsCanvas} />
         </section>
 
-        <section className={styles.container}>
-          <label htmlFor="ruleID">Rule: </label>
-          <input id="ruleID" min="0" max="255" {...bindRule} />
+        <hr style={{ visibility: simpleMode ? "hidden" : "initial", width: "80%", borderWidth: "0.1rem" }} />
 
-          <label htmlFor="cellSize">Size of cell: </label>
-          <input id="cellSize" min="1" max="15" {...bindSize} />
+        <section
+          className={styles.segment}
+          style={{ visibility: simpleMode ? "hidden" : "initial" }}
+        >
+          <h2>Analysis</h2>
 
-          <label htmlFor="nCells">Number of cells: </label>
-          <input id="nCells" min="10" step="10" max="900" {...bindNCells} />
+          {automata.current && (
+            <div className={styles.analysisData}>
+              <p>Average: {automata.current.average}</p>
+              <p>Variance: {automata.current.variance} </p>
+            </div>
+          )}
 
-          <label htmlFor="steps">Iterations: </label>
-          <input id="steps" min="10" step="10" {...bindSteps} />
+          <div id="graph" />
         </section>
-
-        {!intenseMode && (
-          <section className={styles.container}>
-            <input type="file" id="file" onChange={getInit} />
-            <button onClick={doIt}>Simulate automata</button>
-          </section>
-        )}
-
-        <canvas ref={canvas} {...propsCanvas} />
-        <div id="graph" style={{visibility: intenseMode? "hidden" : "initial"}} />
       </main>
     </div>
   );
