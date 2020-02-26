@@ -1,11 +1,11 @@
 self.__precacheManifest = (self.__precacheManifest || []).concat([
   {
-    "revision": "9b5f56cd65865d297f2a55810fcffd4d",
+    "revision": "567b254fbf2eda7d0bbc2a43476715a6",
     "url": "/CellularAutomata/index.html"
   },
   {
-    "revision": "c6875fc4a027c2bfe245",
-    "url": "/CellularAutomata/static/css/main.5460ebe0.chunk.css"
+    "revision": "99ec859fddb48411a317",
+    "url": "/CellularAutomata/static/css/main.3b408f1d.chunk.css"
   },
   {
     "revision": "f47e2e49e003bec5a1a0",
@@ -16,8 +16,8 @@ self.__precacheManifest = (self.__precacheManifest || []).concat([
     "url": "/CellularAutomata/static/js/2.5978cb80.chunk.js.LICENSE.txt"
   },
   {
-    "revision": "c6875fc4a027c2bfe245",
-    "url": "/CellularAutomata/static/js/main.c6957848.chunk.js"
+    "revision": "99ec859fddb48411a317",
+    "url": "/CellularAutomata/static/js/main.f4c3dad2.chunk.js"
   },
   {
     "revision": "f201a06a6cdaf751faf7",
